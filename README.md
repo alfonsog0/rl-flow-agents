@@ -11,6 +11,8 @@
   2) Stochastic pop-ups masking actions  
   3) Hidden dependency (earlier action toggles later transition)
 - **Rewards**: step=-0.01, success=+1.0, failure=-0.5.
+- **Observation dimension**: Fixed observation size. We set obs_dim=32 and pad one-hot node observations to this length. This allows training a single policy and evaluating zero-shot on graphs with different sizes (n_nodes ≤ 32) without changing the network architecture. This keeps evaluations under distribution shift (deeper graphs, more popups) apples-to-apples.
+- **Memory & generalisation**: Expectation. PPO-LSTM (recurrent) > PPO (feedforward) on popup-heavy settings (partial observability), PPO ≈/≥ DQN on base; both degrade under heavier popups, but LSTM degrades less. Zero-shot on deeper graphs shows a drop but remains above random, demonstrating transfer.
 
 ## Algorithms
 - **DQN** (value-based), **PPO** (policy-gradient), **RecurrentPPO** (LSTM for memory).
