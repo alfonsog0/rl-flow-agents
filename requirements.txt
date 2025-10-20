@@ -8,3 +8,4 @@ sb3-contrib>=2.3.0
 
 # PyTorch (CPU wheel is fine for MVP)
 torch>=2.3
+PyYAML>=6.0.2
