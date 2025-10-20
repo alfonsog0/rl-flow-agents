@@ -1,6 +1,8 @@
+# configs/shift_deeper.yaml
 n_nodes: 28
 branch_p: 0.30
 dead_end_p: 0.12
 popup_p: 0.15
 hidden_dep_p: 0.20
 max_steps: 90
+obs_dim: 32   # NEW (same as training)

@@ -1,6 +1,8 @@
+# configs/env_easy.yaml
 n_nodes: 15
 branch_p: 0.35
 dead_end_p: 0.10
 popup_p: 0.15
 hidden_dep_p: 0.20
 max_steps: 60
+obs_dim: 32   # NEW

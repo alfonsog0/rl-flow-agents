@@ -7,13 +7,12 @@ from envs.generators import FlowGenConfig
 import yaml
 
 def make_env(env_cfg):
-    # Split env vs generator kwargs
     gen_keys = set(FlowGenConfig.__dataclass_fields__.keys())
     gen_kwargs = {k: v for k, v in env_cfg.items() if k in gen_keys}
     env_max_steps = env_cfg.get("max_steps", 60)
-
+    obs_dim = env_cfg.get("obs_dim", None)  # new
     cfg = FlowGenConfig(**gen_kwargs)
-    return FlowEnv(cfg, max_steps=env_max_steps)
+    return FlowEnv(cfg, max_steps=env_max_steps, obs_dim=obs_dim)
 
 def main():
     ap = argparse.ArgumentParser()
