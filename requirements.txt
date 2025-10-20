@@ -1,0 +1,10 @@
+gymnasium>=0.29
+numpy>=1.26
+networkx>=3.3
+matplotlib>=3.8
+
+stable-baselines3>=2.3.2
+sb3-contrib>=2.3.0
+
+# PyTorch (CPU wheel is fine for MVP)
+torch>=2.3
