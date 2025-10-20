@@ -1,0 +1,4 @@
+total_timesteps: 150000
+seeds: [0,1,2,3,4]
+gamma: 0.99
+lr: 3.0e-4
