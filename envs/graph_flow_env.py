@@ -6,7 +6,7 @@ from .generators import sample_flow, FlowGenConfig, FlowGraph
 class FlowEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, cfg: FlowGenConfig, max_steps: int = 60, r_step=-0.01, r_success=1.0, r_failure=-0.5, seed: int | None = None):
+    def __init__(self, cfg: FlowGenConfig, max_steps: int = 60, r_step=-0.01, r_success=1.0, r_failure=-0.5, seed: int | None = None, obs_dim: int | None = None):
         super().__init__()
         self.cfg = cfg
         self.max_steps = max_steps
@@ -15,8 +15,14 @@ class FlowEnv(gym.Env):
         self.r_failure = r_failure
         self.rng = np.random.default_rng(seed)
         self._build()
-        # Observation: one-hot current node (compact); latent flags NOT exposed
-        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(self.n_nodes,), dtype=np.float32)
+        self.obs_dim = obs_dim if obs_dim is not None else self.flow.g.number_of_nodes()
+        # --- guard against undersized observation space
+        if self.n_nodes > self.obs_dim:
+            raise ValueError(
+                f"n_nodes ({self.n_nodes}) > obs_dim ({self.obs_dim}). "
+                "Increase obs_dim in the config."
+            )
+        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(self.obs_dim,), dtype=np.float32)
         # Actions: choose among a fixed-size action menu; we map to outgoing edges by index
         self.max_actions = 6  # clickA, clickB, type, next, back, dismiss (abstract)
         self.action_space = spaces.Discrete(self.max_actions)
@@ -35,8 +41,10 @@ class FlowEnv(gym.Env):
         return self._obs(), {"node_id": self._node}
 
     def _obs(self):
-        x = np.zeros(self.n_nodes, dtype=np.float32)
-        x[self._node] = 1.0
+        # pad/truncate to obs_dim
+        x = np.zeros(self.obs_dim, dtype=np.float32)
+        idx = min(self._node, self.obs_dim - 1)  # safe-guard
+        x[idx] = 1.0
         return x
 
     def step(self, action: int):
