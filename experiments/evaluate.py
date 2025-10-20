@@ -17,25 +17,36 @@ def load_model(path):
 def evaluate(model, env_cfg, episodes=50, seed=0):
     gen_keys = set(FlowGenConfig.__dataclass_fields__.keys())
     gen_kwargs = {k: v for k, v in env_cfg.items() if k in gen_keys}
-    env = FlowEnv(FlowGenConfig(**gen_kwargs), max_steps=env_cfg.get("max_steps", 60), seed=seed)
+    env = FlowEnv(FlowGenConfig(**gen_kwargs),
+                  max_steps=env_cfg.get("max_steps", 60),
+                  seed=seed,
+                  obs_dim=env_cfg.get("obs_dim", None))
     succ, steps = 0, []
+    recurrent = model.__class__.__name__ in {"RecurrentPPO"} or "Lstm" in model.policy.__class__.__name__
     for ep in range(episodes):
         obs, info = env.reset(seed=seed+ep)
         done = False
         st = 0
-        lstm_state = None
+        state = None
+        episode_start = True
         while not done:
-            if hasattr(model, "predict") and "Recurrent" in model.__class__.__name__:
-                action, lstm_state = model.predict(obs, state=lstm_state, deterministic=True)
+            if recurrent:
+                action, state = model.predict(obs, state=state, episode_start=episode_start, deterministic=True)
             else:
                 action, _ = model.predict(obs, deterministic=True)
+            episode_start = False
             obs, reward, term, trunc, info = env.step(int(action))
             done = term or trunc
             st += 1
+            if done:
+                # reset recurrent state between episodes
+                state = None
+                episode_start = True
         if info.get("node_id") == env.flow.goal:
             succ += 1
         steps.append(st)
     return {"success_rate": succ/episodes, "avg_steps": float(np.mean(steps))}
+
 
 def main():
     ap = argparse.ArgumentParser()
