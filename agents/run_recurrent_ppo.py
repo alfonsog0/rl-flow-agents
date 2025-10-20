@@ -6,8 +6,13 @@ from envs.generators import FlowGenConfig
 import yaml
 
 def make_env(env_cfg):
-    cfg = FlowGenConfig(**env_cfg)
-    return FlowEnv(cfg, max_steps=env_cfg.get("max_steps", 60))
+    # Split env vs generator kwargs
+    gen_keys = set(FlowGenConfig.__dataclass_fields__.keys())
+    gen_kwargs = {k: v for k, v in env_cfg.items() if k in gen_keys}
+    env_max_steps = env_cfg.get("max_steps", 60)
+
+    cfg = FlowGenConfig(**gen_kwargs)
+    return FlowEnv(cfg, max_steps=env_max_steps)
 
 def main():
     ap = argparse.ArgumentParser()

@@ -15,7 +15,9 @@ def load_model(path):
         return DQN.load(path)
 
 def evaluate(model, env_cfg, episodes=50, seed=0):
-    env = FlowEnv(FlowGenConfig(**env_cfg), max_steps=env_cfg.get("max_steps", 60), seed=seed)
+    gen_keys = set(FlowGenConfig.__dataclass_fields__.keys())
+    gen_kwargs = {k: v for k, v in env_cfg.items() if k in gen_keys}
+    env = FlowEnv(FlowGenConfig(**gen_kwargs), max_steps=env_cfg.get("max_steps", 60), seed=seed)
     succ, steps = 0, []
     for ep in range(episodes):
         obs, info = env.reset(seed=seed+ep)
