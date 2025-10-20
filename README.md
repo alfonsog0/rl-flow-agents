@@ -34,3 +34,12 @@ python experiments/evaluate.py --models_glob 'results/dqn/*.zip' --env_config co
 
 # plot (MVP)
 python experiments/plot.py --jsonl results/ppo_eval.json results/ppo_lstm_shift_popups.json results/dqn_shift_deeper.json --out results/plots
+
+
+DQN   (base)        mean=0.780  sd=0.076  95%CI±0.095  n=5
+PPO   (base)        mean=0.832  sd=0.048  95%CI±0.060  n=5
+PPO-LSTM (base)     mean=0.808  sd=0.023  95%CI±0.028  n=5
+PPO   (popups↑)     mean=0.812  sd=0.054  95%CI±0.067  n=5
+PPO-LSTM (popups↑)  mean=0.752  sd=0.066  95%CI±0.082  n=5
+DQN   (popups↑)     mean=0.824  sd=0.062  95%CI±0.077  n=5
+PPO   (deeper)      mean=0.728  sd=0.073  95%CI±0.091  n=5
